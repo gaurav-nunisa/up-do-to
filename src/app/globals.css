@@ -15,7 +15,12 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  min-height: 100vh; /* make the body take up the full height of the viewport */
+  display: flex; /* make the body a flex container */
+  flex-direction: column; /* make the body a column flex container */
+  background-color: #98c1d9;
   font-family: Arial, Helvetica, sans-serif;
+}
+footer {
+  margin-top: auto; /* make the footer stick to the bottom */
 }
