@@ -1,4 +1,4 @@
-import ToDoCard from "../../../components/ToDoCardLogic";
+import ToDoCard from "../../../components/todos/ToDoCardLogic";
 export default function Page() {
   return (
     <div>
