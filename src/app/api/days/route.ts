@@ -8,13 +8,13 @@ export async function POST(request: Request) {
         const body = await request.json()
         console.log("recieved body for day", body);
 
-        const checkForDay = await Day.findOne({date : body.day})
+        const checkForDay = await Day.findOne({date : body.date})
         if(checkForDay){
             console.log("Day already exists" , checkForDay)
             return NextResponse.json(checkForDay)
            
         }
-        const newDay = await Day.create({date : body.day
+        const newDay = await Day.create({date : body.date, dayName : body.day
             
         })
 

@@ -170,18 +170,22 @@ const ToDoCardLogic = ({
 
   const toggleCompleted = async (index: number, todoId: string) => {
     try {
-      const todo = newTodo[index];
-      const response = await axios.put(`/api/todos/${todo._id}`, {
+      const todo = dbTodos[index];
+      await axios.put(`/api/todos/${todo._id}`, {
         completed: !todo.completed,
       });
+      const responseGet = await axios.get(`api/days${dayIdProps}`)
+      setDbTodos(responseGet.data)
 
-      setDbTodos((prev) =>
-        prev.map((input) =>
-          input._id === todoId
-            ? { ...input, completed: !input.completed }
-            : input
-        )
-      );
+
+
+      // setDbTodos((prev) =>
+      //   prev.map((input) =>
+      //     input._id === todoId
+      //       ? { ...input, completed: !input.completed }
+      //       : input
+      //   )
+      // );
 
       const updatedItems = [...newTodo];
       updatedItems[index].completed = !updatedItems[index].completed;

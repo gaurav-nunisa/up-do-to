@@ -6,6 +6,10 @@ const DaySchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    dayName :{
+        type : String,
+        required : true
+    },
     todos: {
         type: [mongoose.Schema.Types.ObjectId],  // Changed: Simplified array definition
         ref: 'Todo',

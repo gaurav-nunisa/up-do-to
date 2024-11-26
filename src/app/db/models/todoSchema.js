@@ -17,6 +17,12 @@ const TodoSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Day",
         required : true
+    },
+    week :{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Week",
+        required : false
+
     }
 })
 export default mongoose.models.Todo || mongoose.model("Todo", TodoSchema);
