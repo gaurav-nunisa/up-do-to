@@ -49,8 +49,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const day = searchParams.get("day");
     const todos = await Todo.find({ day: day });
-
-    return NextResponse.json(todos);
+    if (day) {
+      const todos = await Todo.find({ day: day });
+      return NextResponse.json(todos.length > 0 ? todos : []);
+    } else {
+      // If no day is provided, fetch all todos
+      const allTodos = await Todo.find();
+      return NextResponse.json(allTodos);
+    }
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to fetch todo" },

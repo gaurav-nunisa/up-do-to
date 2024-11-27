@@ -7,7 +7,7 @@ const weekSchema = new mongoose.Schema({
     completedTask: {
       type: Number,
     },
-    unCompletedTask: {
+    uncompletedTask: {
       type: Number,
     },
   },

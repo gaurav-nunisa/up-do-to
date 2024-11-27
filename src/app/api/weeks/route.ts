@@ -8,7 +8,7 @@ export async function POST(request : Request){
         const body = await request.json()
         console.log("recieved body for week", body)
 
-        const newWeek = await Week.create({totalTask : body.totalTask, completedTask : body.CompletedTask, unCompletedTask : body.unCompletedTask})
+        const newWeek = await Week.create({totalTask : body.totalTask, completedTask : body.completedTask, uncompletedTask : body.uncompletedTask})
 
 
         const verifiedWeek = await Week.findById(newWeek._id)
