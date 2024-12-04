@@ -1,24 +1,60 @@
 // src/app/components/WeekView.tsx
 
 "use client";
+import axios from "axios";
 import { useState, useEffect } from "react";
 import { DayCard } from "./DayCard";
-import { generateWeekDates, isInCurrentWeek } from "../../utils/dateHelper";
+import { generateWeekDates, isInCurrentWeek } from "../../utils/dateHelper"
+import { getWeekBoundaries } from "../../utils/dateHelper";
 
 const WeekView = () => {
-  const [weekDates, setWeekDates] = useState<WeekDay[]>([]);
+  const [weekDates, setWeekDates] = useState<[]>([]);
 
   useEffect(() => {
-    // Initial generation of week dates
-    setWeekDates(generateWeekDates());
+    const initializeWeek = async () => {
+      const today = new Date();
+      const { startOfWeek, endOfWeek } = getWeekBoundaries(today);
 
-    // Check if we need to refresh the week block
+      // Check if the current date is within the existing week
+      if (!isInCurrentWeek(today)) {
+        try {
+             // First check if a week exists for these dates
+          const response = await axios.get('/api/weeks/check', {
+            params: {
+              startDate: startOfWeek.toISOString(),
+              endDate: endOfWeek.toISOString()
+            }
+          });
+  
+          // Only create a new week if one doesn't exist
+          if (!response.data.exists) {
+            const defaultWeekData = {
+              totalTask: 0,
+              completedTask: 0,
+              uncompletedTask: 0,
+              startDate: startOfWeek,
+              endDate: endOfWeek
+            };
+            await axios.post("/api/weeks/transition", defaultWeekData);
+          }
+        } catch (error) {
+          console.error("Failed to transition week:", error);
+        }
+      }
+
+      // Generate and set the current week's dates
+      setWeekDates(generateWeekDates());
+    };
+
     const checkWeekBlock = () => {
       const today = new Date();
       if (!isInCurrentWeek(today)) {
         setWeekDates(generateWeekDates());
       }
     };
+
+    // Initial setup
+    initializeWeek();
 
     // Check every day at midnight
     const now = new Date();

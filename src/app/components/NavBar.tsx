@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AiOutlineHome } from "react-icons/ai";
 const NavBar = () => {
   return (
@@ -40,7 +41,15 @@ const NavBar = () => {
   </div>
   <div className="navbar-center hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
-      <li><a>Item 1</a></li>
+    <li>
+            {/* This is the new Link for the Analysis page */}
+            <Link 
+              href="/components/analysispage" 
+              className="btn btn-ghost normal-case text-xl"
+            >
+              ANALYTICS
+            </Link>
+          </li>
      
       <li><a>Item 3</a></li>
     </ul>

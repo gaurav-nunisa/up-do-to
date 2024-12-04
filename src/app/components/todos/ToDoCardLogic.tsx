@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+
 const ToDoCardLogic = ({
   dayIdProps,
   day,
@@ -10,8 +11,8 @@ const ToDoCardLogic = ({
   day: string;
 }) => {
   const [newTodo, setNewTodo] = useState<
-    Array<{ _id?: string; text: string; completed: boolean; day: string }>
-  >([{ text: "", completed: false, day: "" }]);
+    Array<{ _id?: string; text: string; completed: boolean; day: string ; week : string }>
+  >([{ text: "", completed: false, day: "" , week: ""}]);
 
   const [dbTodos, setDbTodos] = useState<
     Array<{
@@ -21,6 +22,7 @@ const ToDoCardLogic = ({
       day: string;
     }>
   >([]);
+  const [thisWeeksId , setThisWeeksId] = useState<string>('')
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -71,16 +73,33 @@ const ToDoCardLogic = ({
     newHandleClickInputs[index].day = dayIdProps;
     setNewTodo(newHandleClickInputs);
   };
+  const getCurrentWeekId = async () => {
+    try {
+      const response = await axios.get('/api/weeks/getweekid');
+      setThisWeeksId(response.data.weekId) 
+      console.log("sethtisweekid", thisWeeksId)
+    } catch (error) {
+      console.error('Failed to get current week ID:', error);
+      return null;
+    }
+  };
+  
 
   const createTodo = async (todo: {
     text: string;
     completed: boolean;
     day: string;
+    week : string
   }) => {
     try {
+      await getCurrentWeekId()
+      if (!thisWeeksId) {
+        throw new Error('Week ID not found');
+      }
       const response = await axios.post("/api/todos", {
         ...todo,
         day: dayIdProps,
+        week: thisWeeksId
       });
       return response.data;
     } catch (error) {
@@ -125,7 +144,7 @@ const ToDoCardLogic = ({
 
           setNewTodo([
            
-            { text: "", completed: false, day: dayIdProps },
+            { text: "", completed: false, day: dayIdProps, week : thisWeeksId },
           ]);
         }
         const nextTodo = newTodo[index + 1];
