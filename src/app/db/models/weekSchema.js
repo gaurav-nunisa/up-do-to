@@ -24,4 +24,5 @@ const weekSchema = new mongoose.Schema({
     ref : 'Todo'
   }]
 });
-export default mongoose.models.Week || mongoose.model("Week", weekSchema);
+const Week = mongoose.models.Week || mongoose.model("Week", weekSchema);
+export default Week;

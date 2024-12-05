@@ -3,6 +3,8 @@
 import { connectDB } from "@/app/db/connect";
 import Day from "@/app/db/models/daySchema";
 import { NextResponse } from "next/server";
+import Todo from "@/app/db/models/todoSchema";
+
 
 
 
@@ -24,7 +26,7 @@ export async function GET(
         .populate({
           path: "todos",
           select: "_id text completed day",
-          model: "Todo" // Explicitly specify the model
+          model: Todo // Explicitly specify the model
         })
         .lean()
         .exec();

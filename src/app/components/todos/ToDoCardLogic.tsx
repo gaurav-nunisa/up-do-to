@@ -2,7 +2,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-
 const ToDoCardLogic = ({
   dayIdProps,
   day,
@@ -11,8 +10,14 @@ const ToDoCardLogic = ({
   day: string;
 }) => {
   const [newTodo, setNewTodo] = useState<
-    Array<{ _id?: string; text: string; completed: boolean; day: string ; week : string }>
-  >([{ text: "", completed: false, day: "" , week: ""}]);
+    Array<{
+      _id?: string;
+      text: string;
+      completed: boolean;
+      day: string;
+      week: string;
+    }>
+  >([{ text: "", completed: false, day: "", week: "" }]);
 
   const [dbTodos, setDbTodos] = useState<
     Array<{
@@ -22,7 +27,7 @@ const ToDoCardLogic = ({
       day: string;
     }>
   >([]);
-  const [thisWeeksId , setThisWeeksId] = useState<string>('')
+  const [thisWeeksId, setThisWeeksId] = useState<string>("");
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -75,33 +80,31 @@ const ToDoCardLogic = ({
   };
   const getCurrentWeekId = async () => {
     try {
-      const response = await axios.get('/api/weeks/getweekid');
-      setThisWeeksId(response.data.weekId) 
-      console.log("sethtisweekid", thisWeeksId)
+      const response = await axios.get("/api/weeks/getweekid");
+      setThisWeeksId(response.data.weekId);
+      console.log("sethtisweekid", thisWeeksId);
     } catch (error) {
-      console.error('Failed to get current week ID:', error);
+      console.error("Failed to get current week ID:", error);
       return null;
     }
   };
-  
+  useEffect(()=>{
+    getCurrentWeekId();
+  }, [])
 
   const createTodo = async (todo: {
     text: string;
     completed: boolean;
     day: string;
-    week : string
+    week: string;
   }) => {
     try {
-      await getCurrentWeekId()
-      if (!thisWeeksId) {
-        throw new Error('Week ID not found');
-      }
       const response = await axios.post("/api/todos", {
         ...todo,
         day: dayIdProps,
-        week: thisWeeksId
+        week: thisWeeksId,
       });
-      return response.data;
+      return response.data; 
     } catch (error) {
       console.error("Error creating todo:", error);
       throw error;
@@ -132,25 +135,42 @@ const ToDoCardLogic = ({
             const response = await axios.get(`/api/days/${dayIdProps}`);
             setDbTodos(response.data);
           }
-         
         }
+         // This updates thisWeeksId state
+
         const currentTodo = newTodo[index];
         if (currentTodo?.text.trim()) {
-          const response = await createTodo(currentTodo);
+          // Make sure we have a week ID before creating the todo
+          if (!thisWeeksId) {
+            console.error("No week ID available");
+            return;
+          }
+
+          // Create todo with the week ID
+          const response = await createTodo({
+            ...currentTodo,
+            week: thisWeeksId, // Explicitly pass the week ID
+          });
           console.log("created todo:", response);
 
+          // Fetch updated todos
           const updatedTodos = await axios.get(`/api/days/${dayIdProps}`);
           setDbTodos(updatedTodos.data);
 
+          // Reset the new todo input with the current week ID
           setNewTodo([
-           
-            { text: "", completed: false, day: dayIdProps, week : thisWeeksId },
+            {
+              text: "",
+              completed: false,
+              day: dayIdProps,
+              week: thisWeeksId, // Make sure to include the week ID
+            },
           ]);
         }
         const nextTodo = newTodo[index + 1];
         if (nextTodo && nextTodo.text.trim() === "") {
           setNewTodo([...newTodo]);
-      }
+        }
       } catch (error) {
         console.error("Failed to create todo:", error);
       }
@@ -158,13 +178,13 @@ const ToDoCardLogic = ({
     if (e.key === "Backspace") {
       const todoToDelete = dbTodos[index];
       if (todoToDelete && todoToDelete._id && todoToDelete.text.trim() === "") {
-          try {
-              await deleteTodo(todoToDelete._id);
-              const response = await axios.get(`/api/days/${dayIdProps}`);
-              setDbTodos(response.data);
-          } catch (error) {
-              console.error("Failed to delete todo:", error);
-          }
+        try {
+          await deleteTodo(todoToDelete._id);
+          const response = await axios.get(`/api/days/${dayIdProps}`);
+          setDbTodos(response.data);
+        } catch (error) {
+          console.error("Failed to delete todo:", error);
+        }
       }
     }
   };
@@ -193,8 +213,6 @@ const ToDoCardLogic = ({
       await axios.put(`/api/todos/${todo._id}`, {
         completed: !todo.completed,
       });
-
-
 
       setDbTodos((prev) =>
         prev.map((input) =>

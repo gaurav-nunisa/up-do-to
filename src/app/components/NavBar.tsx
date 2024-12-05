@@ -35,7 +35,8 @@ const NavBar = () => {
       strokeWidth="2"
       />
   </svg>
-  <AiOutlineHome/>
+  <Link href="/"> <AiOutlineHome/></Link>
+ 
 </button>
 
   </div>
@@ -51,7 +52,7 @@ const NavBar = () => {
             </Link>
           </li>
      
-      <li><a>Item 3</a></li>
+      <li><Link href="/components/analysispage/monthdata/totalmonthdata" className="btn btn-ghost normal-case text-xl">MontData</Link></li>
     </ul>
   </div>
   <div className="navbar-end">
